@@ -86,7 +86,7 @@ defaults
 # Stats and admin interface                         #
 # ------------------------------------------------- #
 listen stats
-        bind :9200
+        bind :9600
         mode http
         stats enable
         stats uri /
