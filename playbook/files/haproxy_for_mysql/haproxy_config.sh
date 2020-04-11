@@ -7,6 +7,10 @@ PORT=${1}
 PRIMARY=${2}
 BACKUP=${3}
 
+if [ $PRIMARY == $BACKUP ]; then
+  BACKUP=""
+fi
+
 total_backup=`echo $BACKUP | wc -w`
 
 if [ $total_backup -gt 0 ]; then
@@ -16,7 +20,7 @@ echo "" > /tmp/SERVERS
 while [ $counter -gt 0 ]
  do
    for SERVERS in $BACKUP; do
-    echo $"server db$(( $cnt + 1 ))-live.a $SERVERS:$PORT check non-stick backup \n       " >> /tmp/SERVERS; ec=$?
+    echo $"server db$(( $cnt + 1 ))-live.a $SERVERS:$PORT check non-stick backup \n" >> /tmp/SERVERS; ec=$?
     if [ $ec -ne 0 ]; then
          echo "Script execution failed - `date +"%Y-%m-%d_%T"`"
          exit 1
@@ -30,6 +34,10 @@ while [ $counter -gt 0 ]
 BACKUP_ADDRESS=$(cat /tmp/SERVERS)
 BACKUP_ADDRESS=$(echo -en $BACKUP_ADDRESS)
 
+sed -ie 's/backup//g' /tmp/SERVERS
+BACKUP_ADDRESS_RO=$(cat /tmp/SERVERS)
+BACKUP_ADDRESS_RO=$(echo -en $BACKUP_ADDRESS_RO)
+
 FRONT_BACKEND_RO="frontend frontend_mysql_ro
         bind 127.0.0.1:3307
         mode tcp
@@ -40,10 +48,13 @@ MYSQL_BACKEND_RO="# ------------------------------------------------- #
 # ------------------------------------------------- #
 backend backend_mysql_ro
  mode tcp
- balance first
+ timeout client  10800s
+ timeout server  10800s
+ balance leastconn
  option httpchk
- default-server port 9200 maxconn 1000 fall 15 rise 5 inter 5s downinter 10s on-marked-down shutdown-sessions on-marked-up shutdown-backup-sessions
- $BACKUP_ADDRESS"
+ option allbackups
+ default-server port 9200 inter 2s downinter 5s rise 3 fall 2 slowstart 60s maxconn 64 maxqueue 128 weight 100 on-marked-down shutdown-sessions on-marked-up shutdown-backup-sessions
+ $BACKUP_ADDRESS_RO"
 
 fi
 
@@ -97,9 +108,9 @@ $FRONT_BACKEND_RO
 # ------------------------------------------------- #
 backend backend_mysql
  mode tcp
- balance first
+ balance leastconn
  option httpchk
- default-server port 9200 maxconn 1000 fall 15 rise 5 inter 5s downinter 10s on-marked-down shutdown-sessions on-marked-up shutdown-backup-sessions
+ default-server port 9200 inter 2s downinter 5s rise 3 fall 2 slowstart 60s maxconn 64 maxqueue 128 weight 100 on-marked-down shutdown-sessions on-marked-up shutdown-backup-sessions
  $PRIMARY_ADDRESS
  $BACKUP_ADDRESS
 
@@ -108,6 +119,9 @@ $MYSQL_BACKEND_RO" > /etc/haproxy/haproxy.cfg
 ### start haproxy service ###
 systemctl enable haproxy.service
 systemctl restart haproxy.service
+
+### remove tmp files ###
+rm -rf /tmp/SERVERS
 
 echo "##############"
 echo "END - [`date +%d/%m/%Y" "%H:%M:%S`]"

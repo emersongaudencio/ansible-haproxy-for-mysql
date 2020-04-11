@@ -1,0 +1,25 @@
+---
+- name: Haproxy MySQL Check Installation
+  hosts: all
+  tasks:
+     - name: Transfering Haproxy MySQL Check (mysqlchk) install script
+       copy: src=haproxy_for_mysql/mysqlchk dest=/tmp mode=0777
+
+     - name: Transfering Haproxy MySQL Check Configuration script
+       copy: src=haproxy_for_mysql/mysqlchk_install_config.sh dest=/tmp mode=0777
+
+     - name: Executing Haproxy MySQL Check Configuration script
+       command: "sh /tmp/mysqlchk_install_config.sh {{ mysql_user }} {{ mysql_password }}"
+       register: cmd_config
+     - debug: msg="{{ cmd_config.stdout_lines|replace('\\t',' ') }}"
+     - debug: msg="{{ cmd_config.stderr_lines|replace('\\t',' ') }}"
+
+     - name: Removing - mysqlchk
+       file:
+         path: /tmp/mysqlchk
+         state: absent
+
+     - name: Removing - Haproxy MySQL Check script
+       file:
+         path: /tmp/mysqlchk_install_config.sh
+         state: absent

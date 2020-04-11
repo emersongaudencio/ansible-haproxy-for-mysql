@@ -26,6 +26,10 @@ if [ "${VAR_PRIMARY_SERVER}" == '' ] ; then
   exit 1
 fi
 
+if [ "${VAR_BACKUP_SERVERS}" == '' ] ; then
+  VAR_BACKUP_SERVERS=${VAR_PRIMARY_SERVER}
+fi
+
 ### Ping host ####
 ansible -i $SCRIPT_PATH/hosts -m ping $VAR_HOST -v
 
