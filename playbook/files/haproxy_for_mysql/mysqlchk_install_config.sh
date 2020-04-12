@@ -57,5 +57,6 @@ systemctl restart xinetd.service
 sleep 5
 
 ## testing the service ####
-telnet 127.0.0.1 9200
+#telnet 127.0.0.1 9200
+sh /usr/local/bin/mysqlchk
 fi
