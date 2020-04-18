@@ -30,7 +30,7 @@
 
  To generate the keys, keep in mind that is mandatory to generate the keys inside of the directory who was copied from the git repository, see instructions below:
  ```
- cd /root/ansible-logical-mysql-replica
+ cd /root/ansible-haproxy-for-mysql
  ssh-keygen -f ansible
  ```
  After that you have had generated the keys to copy the keys to the database machines, see instructions below:
