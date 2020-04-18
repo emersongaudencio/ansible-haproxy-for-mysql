@@ -80,19 +80,19 @@
 ### Parameters specification:
 
 #### run_haproxy_for_mysql.sh
-Parameter | Value           | Mandatory
------------- | ------------- | -------------
-host | dbproxy01 | Yes
-db port | 3306 | Yes
-Primary db server address | 172.16.122.157 | Yes
-Replicas db server address | 172.16.122.157 | No
+Parameter Name | Value           | Mandatory | Order
+------------ | ------------- | ------------- | -------------
+host | dbproxy01 | Yes | 1
+db port | 3306 | Yes | 2
+Primary db server address | 172.16.122.157 | Yes | 3
+Replicas db server address | 172.16.122.157 | No | 4
 
 #### run_haproxy_mysqlchk.sh
-Parameter | Value | Mandatory
------------- | ------------- | -------------
-host | dbmysql57 | Yes
-db username | mysqlchk | Yes
-db user password | YOURPASSWORD | Yes
+Parameter | Value | Mandatory | Order
+------------ | ------------- | ------------- | -------------
+host | dbmysql57 | Yes | 1
+db username | mysqlchk | Yes | 2
+db user password | YOURPASSWORD | Yes | 3
 
 
 Suggested grants privileges to a MySQL User for mysqlchk verification purpose on the master/slave database point it to:
