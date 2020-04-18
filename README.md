@@ -80,7 +80,7 @@
 ### Parameters specification:
 
 #### run_haproxy_for_mysql.sh
-Parameter Name | Value           | Mandatory | Order
+Parameter  | Value           | Mandatory | Order
 ------------ | ------------- | ------------- | -------------
 host | dbproxy01 | Yes | 1
 db port | 3306 | Yes | 2
