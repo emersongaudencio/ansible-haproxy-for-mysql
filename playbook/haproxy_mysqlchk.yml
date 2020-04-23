@@ -1,5 +1,6 @@
 ---
 - name: Haproxy MySQL Check Installation
+  gather_facts: false
   hosts: all
   tasks:
      - name: Transfering Haproxy MySQL Check (mysqlchk) install script
